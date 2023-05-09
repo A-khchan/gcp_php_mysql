@@ -56,6 +56,37 @@ $db = new PDO($dsn,
 }
 
 
+function isValidJSON($str) {
+   json_decode($str);
+   return json_last_error() == JSON_ERROR_NONE;
+}
+
+$json_params = file_get_contents("php://input");
+
+if (strlen($json_params) > 0 && isValidJSON($json_params)) {
+  $decoded_params = json_decode($json_params);
+  $input = $decoded_params->{"input"};
+
+  $sql = "insert into name values ('$input')";
+  $result = $db->query($sql);
+
+  if ($result) {
+
+    $resultArray = array( array('result' => 'success')  );
+ 
+    // Finally, encode the array to JSON and output the results
+    echo json_encode($resultArray);
+
+
+  } else {
+
+    $resultArray = array( array('result' => 'fail') );
+    echo json_encode($resultArray);
+  }
+}
+
+/*
 foreach($db->query('SELECT * FROM name') as $row) {
   echo $row['name']; //etc...
 }
+*/
